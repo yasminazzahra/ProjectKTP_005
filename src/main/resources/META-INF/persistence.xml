@@ -3,6 +3,7 @@
   <persistence-unit name="A.yasmina_project.KTP_jar_0.0.1-SNAPSHOTPU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>A.yasmina.project.KTP.Data</class>
+    <class>A.yasmina.project.KTP.coba.Dummy</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/ktp?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
       <property name="javax.persistence.jdbc.user" value="root"/>
