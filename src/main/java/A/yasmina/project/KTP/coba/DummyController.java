@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import java.text.SimpleDateFormat;
 import org.springframework.http.MediaType;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,13 +30,21 @@ public class DummyController {
     List<Dummy> data = new ArrayList<>();
     
     @RequestMapping("/read")
-    @ResponseBody
-    public List<Dummy> getDummy () {
-    try {
-        data = dummyController.findDummyEntities();
-    }
-    catch (Exception e) {}
-    return data;
+    //@ResponseBody
+    public String getDummy (Model model) {
+    int record = dummyController.getDummyCount();
+        String result = "";
+        try{
+            data = dummyController.findDummyEntities().subList(0, record);
+        }
+        catch (Exception e){
+            result=e.getMessage();
+        }
+        
+        model.addAttribute("goDummy", data);
+         model.addAttribute("record", record);
+         
+        return "dummy";    
     }
     
     @RequestMapping("/create")
@@ -43,21 +52,21 @@ public class DummyController {
         return "dummy/create";
     }
     
-     @PostMapping(value="/newdata", consumes=MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-     @ResponseBody
-    public String newDummy(@RequestParam("file") MultipartFile file, HttpServletRequest data) throws ParseException, Exception{
-//        Dummy dumdata = new Dummy();
-//        
-//        String id = data.getParameter("id");
-//        int iid = Integer.parseInt(id);
-//        String tanggal = data.getParameter("");
-//        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(tanggal);
-//        String filename = StringUtils.cleanPath(file.getOriginalFilename());
-//        byte[] image = file.getBytes();
-//        dumdata.setId(iid);
-//        dumdata.setTanggal(date);
-//        dumdata.setGambar(image);
-        //dummyController.create(dumdata);
-        return "created";
+     @PostMapping(value="/newdata", consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String newDummy(HttpServletRequest data,@RequestParam("gambar") MultipartFile file) throws ParseException, Exception{
+        Dummy dumdata = new Dummy();
+        
+        String id = data.getParameter("id");
+        int iid = Integer.parseInt(id);
+        String tanggal = data.getParameter("date");
+        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(tanggal);
+        String filename = StringUtils.cleanPath(file.getOriginalFilename());
+        byte[] image = file.getBytes();
+        dumdata.setId(iid);
+        dumdata.setTanggal(date);
+        dumdata.setGambar(image);
+        dummyController.create(dumdata);
+        
+        return "dummy/create";
     }
 }
