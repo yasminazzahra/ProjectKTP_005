@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import java.text.SimpleDateFormat;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,7 +43,7 @@ public class DummyController {
             result=e.getMessage();
         }
         
-        model.addAttribute("goDummy", data);
+        model.addAttribute("godummy", data);
          model.addAttribute("record", record);
          
         return "dummy";    
@@ -58,9 +60,8 @@ public class DummyController {
         
         String id = data.getParameter("id");
         int iid = Integer.parseInt(id);
-        String tanggal = data.getParameter("date");
+        String tanggal = data.getParameter("tanggal");
         Date date = new SimpleDateFormat("yyyy-MM-dd").parse(tanggal);
-        String filename = StringUtils.cleanPath(file.getOriginalFilename());
         byte[] image = file.getBytes();
         dumdata.setId(iid);
         dumdata.setTanggal(date);
@@ -69,4 +70,11 @@ public class DummyController {
         
         return "dummy/create";
     }
+    
+    @RequestMapping (value="/gambar" , method = RequestMethod.GET ,produces = {MediaType.IMAGE_PNG_VALUE})
+    public ResponseEntity<byte[]> getImg(@RequestParam("id") int id) throws Exception {
+	Dummy dum = dummyController.findDummy(id);
+	byte[] gambar = dum.getGambar();
+	return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(gambar);
+}
 }
