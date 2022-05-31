@@ -17,6 +17,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -68,7 +71,7 @@ public class DummyController {
         dumdata.setGambar(image);
         dummyController.create(dumdata);
         
-        return "dummy/create";
+        return "redirect:/read";
     }
     
     @RequestMapping (value="/gambar" , method = RequestMethod.GET ,produces = {MediaType.IMAGE_PNG_VALUE})
@@ -76,5 +79,37 @@ public class DummyController {
 	Dummy dum = dummyController.findDummy(id);
 	byte[] gambar = dum.getGambar();
 	return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(gambar);
-}
+    }
+    
+    @RequestMapping("/delete/{id}")
+   public String deletedummy (@PathVariable("id") int id) throws Exception{
+       dummyController.destroy(id);
+       return "redirect:/read";
+   }
+    
+//    @DeleteMapping("/sepatu/{id}")
+//    public ResponseEntity<HttpStatus> deleteSepatuById(@PathVariable Long id){
+//        sepatu.deleteById(id);
+//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//    }
+   @GetMapping("/edit/{id}")
+    public String editDummy(Model model){
+        return "dummy/edit";
+    }
+     @PostMapping(value="/newedit", consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
+     public String updateDummy(HttpServletRequest data,@RequestParam("gambar") MultipartFile file) throws ParseException, Exception{
+        Dummy dumdata = new Dummy();
+        
+        String id = data.getParameter("id");
+        int iid = Integer.parseInt(id);
+        String tanggal = data.getParameter("tanggal");
+        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(tanggal);
+        byte[] image = file.getBytes();
+        dumdata.setId(iid);
+        dumdata.setTanggal(date);
+        dumdata.setGambar(image);
+        dummyController.edit(dumdata);
+        
+        return "redirect:/read";
+    }
 }

@@ -2,7 +2,12 @@
     "elements": {},
     "attributes": {
         "th:text": {},
+        "th:object": {},
         "th:src": {},
-        "th:each": {}
+        "href": {},
+        "th:each": {},
+        "th:href": {},
+        "th:field": {},
+        "th:value": {}
     }
 }

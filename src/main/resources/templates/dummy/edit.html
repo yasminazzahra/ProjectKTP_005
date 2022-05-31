@@ -12,19 +12,19 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     <body>
         <div>Dummy Create</div>
         <hr>
-        <form action="/newdata" method="post" enctype="multipart/form-data">
+        <form th:action="@{/newedit}" th:object="${godummy}" method="post" enctype="multipart/form-data">
             <table>
                 <tr>
                     <td>NIK</td>
-                    <td><input type="text" name="id"></td>
+                    <td><input type="text" name="id" th:value="${godummy.id}"></td>
                 </tr>
                  <tr>
                     <td>Tanggal Lahir</td>
-                    <td><input type="date" name="tanggal"></td>
+                    <td><input type="date" name="tanggal" th:value="${#dates.format(godummy.tanggal,'dd-MMM-yyyy')}"></td>
                 </tr>
                  <tr>
                     <td>Foto</td>
-                    <td><input type="file" name="gambar"></td>
+                    <td><input type="file" name="gambar" th:value="@{${'/gambar?id='+ godummy.id}}"></td>
                 </tr>
                 <tr>
                     <td>
