@@ -4,6 +4,7 @@
  */
 package A.yasmina.project.KTP.coba;
 
+import java.awt.Image;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -81,7 +83,7 @@ public class DummyController {
 	return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(gambar);
     }
     
-    @RequestMapping("/delete/{id}")
+    @GetMapping("/delete/{id}")
    public String deletedummy (@PathVariable("id") int id) throws Exception{
        dummyController.destroy(id);
        return "redirect:/read";
@@ -93,23 +95,34 @@ public class DummyController {
 //        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 //    }
    @GetMapping("/edit/{id}")
-    public String editDummy(Model model){
+    public String editDummy(Model model, @PathVariable("id") int id) throws Exception{
+        Dummy dum = dummyController.findDummy(id);
+        model.addAttribute("godummy", dum);
         return "dummy/edit";
     }
      @PostMapping(value="/newedit", consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
      public String updateDummy(HttpServletRequest data,@RequestParam("gambar") MultipartFile file) throws ParseException, Exception{
-        Dummy dumdata = new Dummy();
+        Dummy dum = new Dummy();
         
         String id = data.getParameter("id");
         int iid = Integer.parseInt(id);
         String tanggal = data.getParameter("tanggal");
-        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(tanggal);
+        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(data.getParameter("tanggal"));
         byte[] image = file.getBytes();
-        dumdata.setId(iid);
-        dumdata.setTanggal(date);
-        dumdata.setGambar(image);
-        dummyController.edit(dumdata);
+        dum.setId(iid);
+        dum.setTanggal(date);
+        dum.setGambar(image);
+        dummyController.edit(dum);
         
         return "redirect:/read";
     }
+     
+//    @RequestMapping("/filename")
+//    public Image getImageDetails(HttpServletRequest data ,@RequestParam("gambar") MultipartFile multipartFile) throws Exception{
+//        Dummy dum = new Dummy();
+//        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+//        byte[] image = multipartFile.getBytes();
+//        return "dummy/read";
+//    }
+     
 }
